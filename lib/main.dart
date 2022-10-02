@@ -14,8 +14,8 @@ class MyApp extends StatelessWidget {
       title: 'Game of life',
       debugShowCheckedModeBanner: false,
       home: GameOfLife(
-        milliseconds: 300,
-        cellSize: 40,
+        milliseconds: 400,
+        cellSize: 10,
         hideControls: false,
       ),
     );
