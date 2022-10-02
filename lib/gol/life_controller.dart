@@ -50,6 +50,7 @@ class LifeController {
 
   void interruptTimer() {
     timer.cancel();
+    callListeners();
   }
 
   void dispose() {

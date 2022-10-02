@@ -49,6 +49,7 @@ class _GameOfLifeState extends State<GameOfLife> {
         });
       }
     });
+
     super.initState();
   }
 
@@ -60,33 +61,37 @@ class _GameOfLifeState extends State<GameOfLife> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: lifeController != null
-          ? Column(
-              children: [
-                if (!widget.hideControls)
-                  SizedBox(
-                    height: lifeController!.controlsSize.height,
-                    child: LifeControls(
-                      controller: lifeController!,
+    return Row(
+      children: [
+        Expanded(
+          child: lifeController != null
+              ? Column(
+                  children: [
+                    if (!widget.hideControls)
+                      SizedBox(
+                        height: lifeController!.controlsSize.height,
+                        child: LifeControls(
+                          controller: lifeController!,
+                        ),
+                      ),
+                    Expanded(
+                      child: LifeGrid(
+                        controller: lifeController!,
+                        cellsColor: widget.cellsColor,
+                        gridColor: widget.gridColor,
+                        backgroundColor: widget.backgroundColor,
+                      ),
                     ),
-                  ),
-                Expanded(
-                  child: LifeGrid(
-                    controller: lifeController!,
-                    cellsColor: widget.cellsColor,
-                    gridColor: widget.gridColor,
-                    backgroundColor: widget.backgroundColor,
-                  ),
+                  ],
+                )
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    CircularProgressIndicator(),
+                  ],
                 ),
-              ],
-            )
-          : Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                CircularProgressIndicator(),
-              ],
-            ),
+        ),
+      ],
     );
   }
 }

@@ -10,13 +10,29 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Game of life',
       debugShowCheckedModeBanner: false,
-      home: GameOfLife(
-        milliseconds: 400,
-        cellSize: 10,
-        hideControls: false,
+      theme: ThemeData(
+          brightness: Brightness.dark,
+          colorScheme: const ColorScheme.dark(
+            primary: Colors.greenAccent,
+          )),
+      home: Scaffold(
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              decoration: BoxDecoration(border: Border.all()),
+              child: const GameOfLife(
+                milliseconds: 200,
+                cellSize: 14,
+                hideControls: false,
+                cellsColor: Colors.greenAccent,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -47,12 +47,12 @@ class _LifeControlsState extends State<LifeControls> {
                     ? Icons.stop
                     : Icons.play_arrow),
                 label:
-                    Text(widget.controller.timer.isActive ? 'Stop' : 'Start'),
+                    Text(widget.controller.timer.isActive ? 'STOP' : 'START'),
               ),
               TextButton.icon(
                 onPressed: () => widget.controller.clear(),
                 icon: const Icon(Icons.clear),
-                label: const Text('Clear'),
+                label: const Text('CLEAR'),
               ),
             ],
           )
