@@ -90,6 +90,7 @@ class LifeGridPainter extends CustomPainter {
     _drawBackground(size, canvas);
     _drawGrid(size, lh, lw, canvas);
     _drawSquares(lh, lw, r, c, canvas);
+    _drawConnections(lh, lw, r, c, canvas);
   }
 
   void _drawBackground(Size size, Canvas canvas) {
@@ -108,14 +109,14 @@ class LifeGridPainter extends CustomPainter {
       ..color = gridColor
       ..strokeCap = StrokeCap.round;
 
-    for (double h = 0; h < height + stroke; h += lh) {
+    for (double h = 0 /*lh / 2*/; h < height + stroke; h += lh) {
       Path linePath = Path();
       linePath.addRect(Rect.fromLTRB(
           0, h.toDouble() - stroke / 2, width, h.toDouble() + stroke / 2));
       canvas.drawPath(linePath, paint);
     }
 
-    for (double w = 0; w < width + stroke; w += lw) {
+    for (double w = 0 /*lw / 2*/; w < width + stroke; w += lw) {
       Path linePath = Path();
       linePath.addRect(Rect.fromLTRB(
           w.toDouble() - stroke / 2, 0, w.toDouble() + stroke / 2, height));
@@ -130,7 +131,7 @@ class LifeGridPainter extends CustomPainter {
     int c,
     Canvas canvas,
   ) {
-    const padding = 1;
+    const padding = 0;
     final paint = Paint()
       ..color = cellsColor
       ..strokeCap = StrokeCap.round;
@@ -170,6 +171,93 @@ class LifeGridPainter extends CustomPainter {
 
     canvas.drawPath(secondPath, secondPaint);
     canvas.drawPath(linePath, paint);
+  }
+
+  void _drawConnections(
+    double lh,
+    double lw,
+    int r,
+    int c,
+    Canvas canvas,
+  ) {
+    final paint = Paint()
+      ..color = cellsColor
+      ..strokeCap = StrokeCap.round;
+
+    for (int i = 0; i < cells.length; i++) {
+      for (int j = 0; j < cells.first.length; j++) {
+        if (!cells[i][j]) {
+          continue;
+        }
+        final center = Offset(j * lw + lw / 2, i * lh + lh / 2);
+
+        if (i - 1 > 0 && j - 1 > 0) {
+          if (cells[i - 1][j - 1]) {
+            canvas.drawPath(
+              Path()
+                ..moveTo(center.dx - lw / 2, center.dy - lh)
+                ..quadraticBezierTo(
+                  center.dx - lw / 2,
+                  center.dy - lh / 2,
+                  center.dx,
+                  center.dy - lh / 2,
+                )
+                ..lineTo(center.dx - lw / 2, center.dy - lh / 2)
+                ..lineTo(center.dx - lw / 2, center.dy - lh)
+                ..close(),
+              paint,
+            );
+            canvas.drawPath(
+              Path()
+                ..moveTo(center.dx - lw / 2, center.dy)
+                ..quadraticBezierTo(
+                  center.dx - lw / 2,
+                  center.dy - lh / 2,
+                  center.dx - lw,
+                  center.dy - lh / 2,
+                )
+                ..lineTo(center.dx - lw / 2, center.dy - lh / 2)
+                ..lineTo(center.dx - lw / 2, center.dy)
+                ..close(),
+              paint,
+            );
+          }
+        }
+
+        if (i - 1 > 0 && j + 1 < cells[i].length) {
+          if (cells[i - 1][j + 1]) {
+            canvas.drawPath(
+              Path()
+                ..moveTo(center.dx + lw / 2, center.dy - lh)
+                ..quadraticBezierTo(
+                  center.dx + lw / 2,
+                  center.dy - lh / 2,
+                  center.dx,
+                  center.dy - lh / 2,
+                )
+                ..lineTo(center.dx + lw / 2, center.dy - lh / 2)
+                ..lineTo(center.dx + lw / 2, center.dy - lh)
+                ..close(),
+              paint,
+            );
+            canvas.drawPath(
+              Path()
+                ..moveTo(center.dx + lw / 2, center.dy)
+                ..quadraticBezierTo(
+                  center.dx + lw / 2,
+                  center.dy - lh / 2,
+                  center.dx + lw,
+                  center.dy - lh / 2,
+                )
+                ..lineTo(center.dx + lw / 2, center.dy - lh / 2)
+                ..lineTo(center.dx + lw / 2, center.dy)
+                ..close(),
+              paint,
+            );
+          }
+        }
+      }
+    }
   }
 
   @override
