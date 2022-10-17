@@ -58,7 +58,7 @@ class _LifeGridState extends State<LifeGrid> with TickerProviderStateMixin {
       final c = tap.dx ~/ widget.controller.cellSize;
       final r = tap.dy ~/ widget.controller.cellSize;
       setState(() {
-        widget.controller.cells[r][c] = 1 - widget.controller.cells[r][c];
+        widget.controller.cells[r][c] = 1;
       });
     } catch (_) {}
   }
