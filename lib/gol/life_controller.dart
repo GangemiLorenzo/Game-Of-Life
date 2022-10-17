@@ -12,11 +12,8 @@ class LifeController {
     rowsCount = gridSize.height ~/ cellSize;
     columnsCount = gridSize.width ~/ cellSize;
 
-    cells = [
-      for (int i = 0; i < rowsCount; i++)
-        [for (int j = 0; j < columnsCount; j++) false]
-    ];
-
+    cells = emptyCells();
+    backBuffer = emptyCells();
     startTimer();
   }
 
@@ -25,7 +22,9 @@ class LifeController {
   final Size gridSize;
   final Size controlsSize;
 
-  late List<List<bool>> cells;
+  late List<List<int>> cells;
+  late List<List<int>> backBuffer;
+
   late Timer timer;
 
   late int columnsCount;
@@ -36,13 +35,13 @@ class LifeController {
 
   void clear() {
     interruptTimer();
-    _clearCells();
+    cells = emptyCells();
     callListeners();
   }
 
   void startTimer() {
     timer = Timer.periodic(Duration(milliseconds: milliseconds), (t) {
-      _compute();
+      compute();
       callListeners();
     });
     callListeners();
@@ -57,61 +56,62 @@ class LifeController {
     timer.cancel();
   }
 
-  void _compute() {
-    List<List<bool>> nextGeneration = [
-      for (int i = 0; i < cells.length; i++)
-        [for (int j = 0; j < cells.first.length; j++) false]
-    ];
-
-    for (int i = 0; i < cells.length; i++) {
-      for (int j = 0; j < cells.first.length; j++) {
+  void compute() {
+    cells.asMap().entries.forEach((r) {
+      r.value.asMap().entries.forEach((c) {
         int n = 0;
+        int i = r.key;
+        int j = c.key;
+        backBuffer[i][j] = 0;
+
         if (i - 1 > 0) {
           if (j - 1 > 0) {
-            n += cells[i - 1][j - 1] ? 1 : 0;
+            n += cells[i - 1][j - 1];
           }
-          n += cells[i - 1][j] ? 1 : 0;
+          n += cells[i - 1][j];
           if (j + 1 < cells[i].length) {
-            n += cells[i - 1][j + 1] ? 1 : 0;
+            n += cells[i - 1][j + 1];
           }
         }
         if (i + 1 < cells.length) {
           if (j - 1 > 0) {
-            n += cells[i + 1][j - 1] ? 1 : 0;
+            n += cells[i + 1][j - 1];
           }
-          n += cells[i + 1][j] ? 1 : 0;
+          n += cells[i + 1][j];
           if (j + 1 < cells[i].length) {
-            n += cells[i + 1][j + 1] ? 1 : 0;
+            n += cells[i + 1][j + 1];
           }
         }
 
         if (j - 1 > 0) {
-          n += cells[i][j - 1] ? 1 : 0;
+          n += cells[i][j - 1];
         }
         if (j + 1 < cells[i].length) {
-          n += cells[i][j + 1] ? 1 : 0;
+          n += cells[i][j + 1];
         }
 
-        if (cells[i][j] && (n == 2 || n == 3)) {
-          nextGeneration[i][j] = cells[i][j];
-        } else if (cells[i][j]) {
-          nextGeneration[i][j] = false;
+        if (cells[i][j] == 1 && (n == 2 || n == 3)) {
+          backBuffer[i][j] = cells[i][j];
+        } else if (cells[i][j] == 1) {
+          backBuffer[i][j] = 0;
         }
-        if (!cells[i][j] && n == 3) {
-          nextGeneration[i][j] = !cells[i][j];
+        if (cells[i][j] == 0 && n == 3) {
+          backBuffer[i][j] = 1 - cells[i][j];
         }
-      }
-    }
+      });
+    });
 
-    cells = nextGeneration;
+    final supp = cells;
+    cells = backBuffer;
+    backBuffer = supp;
   }
 
-  _clearCells() {
-    cells = [
-      for (int i = 0; i < cells.length; i++)
-        [for (int j = 0; j < cells.first.length; j++) false]
-    ];
-  }
+  List<List<int>> emptyCells() => List<List<int>>.generate(
+        rowsCount,
+        (_) => [
+          ...List<int>.filled(columnsCount, 0),
+        ],
+      );
 
   void addListener(VoidCallback listener) {
     if (_listenersCount == _listeners.length) {

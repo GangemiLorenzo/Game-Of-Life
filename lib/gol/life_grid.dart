@@ -32,6 +32,8 @@ class _LifeGridState extends State<LifeGrid> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onPanDown: (details) =>
+          _onTap(details.localPosition, widget.controller.gridSize),
       onPanUpdate: (details) =>
           _onTap(details.localPosition, widget.controller.gridSize),
       child: CustomPaint(
@@ -56,7 +58,7 @@ class _LifeGridState extends State<LifeGrid> with TickerProviderStateMixin {
       final c = tap.dx ~/ widget.controller.cellSize;
       final r = tap.dy ~/ widget.controller.cellSize;
       setState(() {
-        widget.controller.cells[r][c] = true;
+        widget.controller.cells[r][c] = 1 - widget.controller.cells[r][c];
       });
     } catch (_) {}
   }
@@ -77,7 +79,7 @@ class LifeGridPainter extends CustomPainter {
 
   final int r;
   final int c;
-  final List<List<bool>> cells;
+  final List<List<int>> cells;
   final Color cellsColor;
   final Color gridColor;
   final Color backgroundColor;
@@ -145,7 +147,7 @@ class LifeGridPainter extends CustomPainter {
     for (int y = 0; y < r; y++) {
       for (int x = 0; x < c; x++) {
         final offset = Offset(x * lw + lw / 2, y * lh + lh / 2);
-        if (cells[y][x]) {
+        if (cells[y][x] == 1) {
           secondPath.addRRect(
             RRect.fromRectAndRadius(
                 Rect.fromCenter(
