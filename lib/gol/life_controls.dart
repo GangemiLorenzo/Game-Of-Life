@@ -19,11 +19,9 @@ class _LifeControlsState extends State<LifeControls> {
   @override
   void initState() {
     ticks = 0;
-    widget.controller.addListener(() => {
-          setState(() {
-            ticks++;
-          })
-        });
+    widget.controller.addListener(() => setState(() {
+          ticks++;
+        }));
     super.initState();
   }
 

@@ -60,38 +60,71 @@ class _GameOfLifeState extends State<GameOfLife> {
   }
 
   @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+  }
+
+  @override
+  void didUpdateWidget(covariant GameOfLife oldWidget) {
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: lifeController != null
-              ? Column(
-                  children: [
-                    if (!widget.hideControls)
-                      SizedBox(
-                        height: lifeController!.controlsSize.height,
-                        child: LifeControls(
-                          controller: lifeController!,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        _onConstraintChange(constraints);
+        return Row(
+          children: [
+            Expanded(
+              child: lifeController != null
+                  ? Column(
+                      children: [
+                        if (!widget.hideControls)
+                          SizedBox(
+                            height: lifeController!.controlsSize.height,
+                            child: LifeControls(
+                              controller: lifeController!,
+                            ),
+                          ),
+                        Expanded(
+                          child: LifeGrid(
+                            controller: lifeController!,
+                            cellsColor: widget.cellsColor,
+                            gridColor: widget.gridColor,
+                            backgroundColor: widget.backgroundColor,
+                          ),
                         ),
-                      ),
-                    Expanded(
-                      child: LifeGrid(
-                        controller: lifeController!,
-                        cellsColor: widget.cellsColor,
-                        gridColor: widget.gridColor,
-                        backgroundColor: widget.backgroundColor,
-                      ),
+                      ],
+                    )
+                  : const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(),
+                      ],
                     ),
-                  ],
-                )
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    CircularProgressIndicator(),
-                  ],
-                ),
-        ),
-      ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _onConstraintChange(BoxConstraints constraints) {
+    lifeController = lifeController?.update(
+      milliseconds: widget.milliseconds,
+      cellSize: widget.cellSize,
+      gridSize: Size(
+        constraints.maxWidth,
+        constraints.maxHeight -
+            (!widget.hideControls ? widget.controlsHeight : 0),
+      ),
+      controlsSize: Size(
+        constraints.maxWidth,
+        widget.controlsHeight,
+      ),
     );
   }
 }

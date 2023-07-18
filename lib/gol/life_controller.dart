@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 
@@ -15,6 +16,20 @@ class LifeController {
     cells = emptyCells();
     backBuffer = emptyCells();
     startTimer();
+  }
+
+  LifeController update({
+    int? milliseconds,
+    double? cellSize,
+    Size? gridSize,
+    Size? controlsSize,
+  }) {
+    return LifeController(
+      milliseconds: milliseconds ?? this.milliseconds,
+      cellSize: cellSize ?? this.cellSize,
+      gridSize: gridSize ?? this.gridSize,
+      controlsSize: controlsSize ?? this.controlsSize,
+    )..copyCells(cells);
   }
 
   final double cellSize;
@@ -132,6 +147,30 @@ class LifeController {
   void callListeners() {
     for (var l in _listeners) {
       l?.call();
+    }
+  }
+
+  void copyCells(List<List<int>> oldCells) {
+    final oldRowCount = oldCells.length;
+    final oldColumnCount = oldCells[0].length;
+
+    final newRowCount = cells.length;
+    final newColumnCount = cells[0].length;
+
+    // Calculate starting indices for central alignment
+    final rowOffset = max(0, (newRowCount - oldRowCount) ~/ 2);
+    final columnOffset = max(0, (newColumnCount - oldColumnCount) ~/ 2);
+
+    for (var i = 0; i < oldRowCount; i++) {
+      for (var j = 0; j < oldColumnCount; j++) {
+        // Make sure indices are within the bounds of the newCells array
+        final newRow = i + rowOffset;
+        final newColumn = j + columnOffset;
+
+        if (newRow < newRowCount && newColumn < newColumnCount) {
+          cells[newRow][newColumn] = oldCells[i][j];
+        }
+      }
     }
   }
 }
