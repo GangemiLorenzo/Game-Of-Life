@@ -60,14 +60,14 @@ class _GameOfLifeState extends State<GameOfLife> {
   }
 
   @override
-  void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
-    super.didChangeDependencies();
-  }
-
-  @override
   void didUpdateWidget(covariant GameOfLife oldWidget) {
-    // TODO: implement didUpdateWidget
+    if (widget.milliseconds != oldWidget.milliseconds) {
+      lifeController = lifeController?.update(
+        milliseconds: widget.milliseconds,
+      );
+      lifeController?.interruptTimer();
+      lifeController?.startTimer();
+    }
     super.didUpdateWidget(oldWidget);
   }
 
