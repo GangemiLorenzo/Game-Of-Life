@@ -68,6 +68,7 @@ class LifeController {
   }
 
   void dispose() {
+    _listeners.clear();
     timer.cancel();
   }
 
@@ -145,7 +146,7 @@ class LifeController {
   }
 
   void callListeners() {
-    for (var l in _listeners) {
+    for (final l in _listeners) {
       l?.call();
     }
   }
