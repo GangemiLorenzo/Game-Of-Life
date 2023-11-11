@@ -23,7 +23,9 @@ class _LifeGridState extends State<LifeGrid> with TickerProviderStateMixin {
   @override
   void initState() {
     widget.controller.addListener(() {
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
 
     super.initState();
